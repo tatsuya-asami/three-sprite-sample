@@ -10,7 +10,7 @@
     "format": "npm run eslint && npm run stylelint",
     "json-server": "npx json-server --watch mockDB.json --port 3001",
     "webpack-server": "npx webpack-dev-server --env.file=development --config webpack/dev.js",
-    "dev": "npm run json-server & npm run webpack-server",
+    "dev": "npm run webpack-server",
     "build:development": "npx webpack --env.file=development --config webpack/prod.js",
     "build:staging": "npx webpack --env.file=staging --config webpack/prod.js",
     "build:production": "npx webpack --env.file=production --config webpack/prod.js"
@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "core-js": "^3.6.5"
+    "core-js": "^3.6.5",
+    "three": "^0.118.3"
   }
 }
