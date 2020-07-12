@@ -40,35 +40,89 @@ controls.update();
 
 const geometry = new THREE.BoxGeometry(30, 30, 30);
 const material = new THREE.MeshLambertMaterial({
-  color: 'red',
+  color: 'green',
   transparent: true,
-  opacity: 0.8,
+  opacity: 0.7,
 });
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
-// ここからがSprite
+// ここからがSprite関係
 
-// 貼り付けるcanvasを作成。
-const canvasForText = document.createElement('canvas');
-const ctx = canvasForText.getContext('2d');
-ctx.canvas.width = 300;
-ctx.canvas.height = 300;
-ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
-ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-ctx.fillStyle = 'black';
-ctx.font = '40px serif';
-// ctx.fillText('Hello WorldWorldWorld!', 5, 40);
-ctx.fillText('Hello WorldWorldWorld!', 5, 40, ctx.canvas.width);
+// svgファイルのtextureを作成
+const createTexture = (filePath) => {
+  return new THREE.TextureLoader().load(filePath);
+};
+// spriteを作成し、sceneに追加
+const createSprite = (texture, scale, position) => {
+  const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+  const sprite = new THREE.Sprite(spriteMaterial);
+  sprite.scale.set(scale.x, scale.y, scale.z);
+  sprite.position.set(position.x, position.y, position.z);
 
-// canvasをtextureに変換し、materialに載せる。
-const canvasTexture = new THREE.CanvasTexture(canvasForText);
-const spriteMaterial = new THREE.SpriteMaterial({
-  map: canvasTexture,
-});
+  scene.add(sprite);
+};
 
-const spriteWithCanvas = new THREE.Sprite(spriteMaterial);
-spriteWithCanvas.position.set(50, 50, 20);
-spriteWithCanvas.scale.set(40, 40, 40);
+const wideImageTexture = createTexture(
+  'https://dummyimage.com/200x100/4a9e62/fff.png'
+);
+createSprite(
+  wideImageTexture,
+  { x: 30, y: 30, z: 30 },
+  { x: 20, y: 20, z: 20 }
+);
+createSprite(wideImageTexture, { x: 60, y: 30, z: 3 }, { x: 70, y: 20, z: 20 });
 
-scene.add(spriteWithCanvas);
+const createCanvasForTexture = (canvasWidth, canvasHeight, text, fontSize) => {
+  // 貼り付けるcanvasを作成。
+  const canvasForText = document.createElement('canvas');
+  const ctx = canvasForText.getContext('2d');
+  ctx.canvas.width = canvasWidth;
+  ctx.canvas.height = canvasHeight;
+  // 透過率50%の青背景を描く
+  ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  //
+  ctx.fillStyle = 'black';
+  ctx.font = `${fontSize}px serif`;
+  ctx.fillText(
+    text,
+    // x方向の余白/2をx方向開始時の始点とすることで、横方向の中央揃えをしている。
+    (canvasWidth - ctx.measureText(text).width) / 2,
+    // y方向のcanvasの中央に文字の高さの半分を加えることで、縦方向の中央揃えをしている。
+    canvasHeight / 2 + ctx.measureText(text).actualBoundingBoxAscent / 2
+  );
+  return canvasForText;
+};
+
+// canvasをtextureに載せ、さらにmaterialに載せる。
+const canvasTexture = new THREE.CanvasTexture(
+  createCanvasForTexture(500, 500, 'Hello World!', 40)
+);
+const scaleMaster = 70;
+
+createSprite(
+  canvasTexture,
+  {
+    x: scaleMaster,
+    y: scaleMaster,
+    z: scaleMaster,
+  },
+  { x: -70, y: 70, z: -70 }
+);
+
+const canvasWidth = 500;
+const canvasHeight = 140;
+const canvasRectTexture = new THREE.CanvasTexture(
+  createCanvasForTexture(canvasWidth, canvasHeight, '寿司鯖あ、。カナｶﾅ', 50)
+);
+createSprite(
+  canvasRectTexture,
+  {
+    x: scaleMaster,
+    // 縦方向の縮尺を調整
+    y: scaleMaster * (canvasHeight / canvasWidth),
+    z: scaleMaster,
+  },
+  { x: 50, y: 50, z: 50 }
+);
