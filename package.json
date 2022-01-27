@@ -60,6 +60,6 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
-    "three": "^0.118.3"
+    "three": "^0.137.0"
   }
 }
